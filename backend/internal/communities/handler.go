@@ -20,13 +20,15 @@ func (h *Handler) Register(r *gin.RouterGroup) {
 	c.GET("", middleware.OptionalAuth(), h.list)
 	c.POST("", middleware.AuthRequired(), h.create)
 	c.GET("/:slug", middleware.OptionalAuth(), h.getBySlug)
-	c.PUT("/:id", middleware.AuthRequired(), h.update)
-	c.GET("/:id/posts", middleware.OptionalAuth(), h.getPosts)
-	c.GET("/:id/members", middleware.OptionalAuth(), h.getMembers)
-	c.GET("/:id/snap-of-week", middleware.OptionalAuth(), h.snapOfWeek)
-	c.POST("/:id/join", middleware.AuthRequired(), h.join)
-	c.DELETE("/:id/join", middleware.AuthRequired(), h.leave)
-	c.PUT("/:id/members/:userId/role", middleware.AuthRequired(), h.updateRole)
+
+	byID := c.Group("/by-id/:id")
+	byID.PUT("", middleware.AuthRequired(), h.update)
+	byID.GET("/posts", middleware.OptionalAuth(), h.getPosts)
+	byID.GET("/members", middleware.OptionalAuth(), h.getMembers)
+	byID.GET("/snap-of-week", middleware.OptionalAuth(), h.snapOfWeek)
+	byID.POST("/join", middleware.AuthRequired(), h.join)
+	byID.DELETE("/join", middleware.AuthRequired(), h.leave)
+	byID.PUT("/members/:userId/role", middleware.AuthRequired(), h.updateRole)
 }
 
 func (h *Handler) list(c *gin.Context) {
