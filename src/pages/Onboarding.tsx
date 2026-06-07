@@ -20,7 +20,7 @@ const STARTER_COMMUNITIES = [
 
 export default function Onboarding() {
   const navigate = useNavigate()
-  const { user, setUser } = useAuthStore()
+  const { user: _user, setUser } = useAuthStore()
   const [step, setStep] = useState(1)
   const [language, setLanguage] = useState<Language>('kannada')
   const [state, setState] = useState('')

@@ -11,7 +11,7 @@ import { useAuthStore } from '../store/auth.store'
 import type { Language } from '../types/user.types'
 
 export default function Home() {
-  const { user } = useAuthStore()
+  const { user: _user } = useAuthStore()
   const [language, setLanguage] = useState<Language | ''>('')
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteQuery({

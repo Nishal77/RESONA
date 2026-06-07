@@ -19,7 +19,7 @@ export default function CreatePost() {
   const navigate = useNavigate()
   const { register, handleSubmit, watch } = useForm<FormData>()
   const [detectedLang, setDetectedLang] = useState<string | null>(null)
-  const [confidence, setConfidence] = useState<number>(0)
+  const [_confidence, _setConfidence] = useState<number>(0)
   const [mediaUrl, setMediaUrl] = useState<string | null>(null)
   const [mediaType, setMediaType] = useState<'image' | 'video' | null>(null)
   const [uploading, setUploading] = useState(false)

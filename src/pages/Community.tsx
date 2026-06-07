@@ -5,7 +5,6 @@ import toast from 'react-hot-toast'
 import { communitiesApi } from '../api/communities.api'
 import { PostCard } from '../components/post/PostCard'
 import { LanguageBadge } from '../components/common/LanguageBadge'
-import { VRSBadge } from '../components/vrs/VRSBadge'
 import { Spinner } from '../components/common/Spinner'
 import { useAuthStore } from '../store/auth.store'
 

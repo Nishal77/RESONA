@@ -15,7 +15,7 @@ interface Props {
   onUpdate?: (updated: Post) => void
 }
 
-export function PostCard({ post, onUpdate }: Props) {
+export function PostCard({ post, onUpdate: _onUpdate }: Props) {
   const navigate = useNavigate()
   const { user } = useAuthStore()
   const [liked, setLiked] = useState(false)
