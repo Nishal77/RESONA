@@ -2,6 +2,8 @@ package auth
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -14,6 +16,15 @@ import (
 	"github.com/Nishal77/resona/backend/pkg/models"
 	"golang.org/x/crypto/bcrypt"
 )
+
+// hashPassword SHA-256 prehashes the password before bcrypt.
+// bcrypt silently truncates input at 72 bytes — prehashing avoids that entirely.
+func hashPassword(plain string) []byte {
+	sum := sha256.Sum256([]byte(plain))
+	// hex-encode so result is 64 printable ASCII bytes — safe for bcrypt
+	encoded := hex.EncodeToString(sum[:])
+	return []byte(encoded)
+}
 
 type Service struct {
 	repo *Repository
@@ -40,7 +51,7 @@ func (s *Service) Register(ctx context.Context, req *RegisterRequest) (*AuthResp
 		return nil, fmt.Errorf("email already registered")
 	}
 
-	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), 10)
+	hash, err := bcrypt.GenerateFromPassword(hashPassword(req.Password), 10)
 	if err != nil {
 		return nil, fmt.Errorf("hash password: %w", err)
 	}
@@ -70,7 +81,7 @@ func (s *Service) Login(ctx context.Context, req *LoginRequest) (*AuthResponse, 
 		return nil, fmt.Errorf("invalid credentials")
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(*user.PasswordHash), []byte(req.Password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(*user.PasswordHash), hashPassword(req.Password)); err != nil {
 		return nil, fmt.Errorf("invalid credentials")
 	}
 
