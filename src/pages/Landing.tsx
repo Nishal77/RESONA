@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
@@ -16,7 +16,14 @@ export default function Landing() {
   const [tab, setTab] = useState<Tab>('login')
   const [googleLoading, setGoogleLoading] = useState(false)
   const navigate = useNavigate()
-  const { setAuth } = useAuthStore()
+  const { setAuth, user } = useAuthStore()
+
+  // Already logged in — skip landing page entirely
+  useEffect(() => {
+    if (user) {
+      navigate(user.onboarding_completed ? '/home' : '/onboarding', { replace: true })
+    }
+  }, [user, navigate])
 
   const loginForm = useForm<LoginForm>()
   const registerForm = useForm<RegisterForm>()
@@ -27,7 +34,7 @@ export default function Landing() {
       const { access_token, user } = res.data.data
       setAuth(user, access_token)
       toast.success(`Welcome back, ${user.username}!`)
-      navigate(user.onboarding_completed ? '/home' : '/onboarding')
+      navigate(user.onboarding_completed ? '/home' : '/onboarding', { replace: true })
     } catch (err: any) {
       toast.error(err.response?.data?.error ?? 'Login failed')
     }
@@ -39,7 +46,7 @@ export default function Landing() {
       const { access_token, user } = res.data.data
       setAuth(user, access_token)
       toast.success('Account created!')
-      navigate('/onboarding')
+      navigate('/onboarding', { replace: true })
     } catch (err: any) {
       toast.error(err.response?.data?.error ?? 'Registration failed')
     }
@@ -58,7 +65,7 @@ export default function Landing() {
         const { access_token, user } = res.data.data
         setAuth(user, access_token)
         toast.success(`Welcome, ${user.full_name ?? user.username}!`)
-        navigate(user.onboarding_completed ? '/home' : '/onboarding')
+        navigate(user.onboarding_completed ? '/home' : '/onboarding', { replace: true })
       } catch (err: any) {
         toast.error(err.response?.data?.error ?? 'Google login failed')
       } finally {
