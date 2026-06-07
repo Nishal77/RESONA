@@ -109,7 +109,7 @@ func (s *Service) GetFeed(ctx context.Context, userID *uuid.UUID, language strin
 	followed := []uuid.UUID{}
 	communities := []uuid.UUID{}
 
-	rows, _ := s.usersRepo.GetFollowing(ctx, *userID, 1, 1000)
+	rows, _, _ := s.usersRepo.GetFollowing(ctx, *userID, 1, 1000)
 	for _, u := range rows {
 		followed = append(followed, u.ID)
 	}

@@ -22,11 +22,14 @@ func (h *Handler) Register(r *gin.RouterGroup) {
 	users.GET("/me/communities", middleware.AuthRequired(), h.getMyCommunities)
 	users.GET("/me/feed", middleware.AuthRequired(), h.getFeed)
 	users.GET("/:username", middleware.OptionalAuth(), h.getByUsername)
-	users.GET("/:id/posts", middleware.OptionalAuth(), h.getPosts)
-	users.GET("/:id/followers", middleware.OptionalAuth(), h.getFollowers)
-	users.GET("/:id/following", middleware.OptionalAuth(), h.getFollowing)
-	users.POST("/:id/follow", middleware.AuthRequired(), h.follow)
-	users.DELETE("/:id/follow", middleware.AuthRequired(), h.unfollow)
+
+	// Routes that need UUID — grouped under /by-id/:id to avoid wildcard conflict
+	byID := r.Group("/users/by-id/:id")
+	byID.GET("/posts", middleware.OptionalAuth(), h.getPosts)
+	byID.GET("/followers", middleware.OptionalAuth(), h.getFollowers)
+	byID.GET("/following", middleware.OptionalAuth(), h.getFollowing)
+	byID.POST("/follow", middleware.AuthRequired(), h.follow)
+	byID.DELETE("/follow", middleware.AuthRequired(), h.unfollow)
 }
 
 func (h *Handler) getMe(c *gin.Context) {

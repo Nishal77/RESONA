@@ -24,7 +24,3 @@ type TokenPair struct {
 	AccessToken string `json:"access_token"`
 }
 
-type AuthResponse struct {
-	AccessToken string      `json:"access_token"`
-	User        interface{} `json:"user"`
-}

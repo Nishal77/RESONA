@@ -31,7 +31,7 @@ type Config struct {
 	GoogleClientSecret string
 	GoogleCallbackURL  string
 
-	GoogleTranslateAPIKey string
+	DeepLAPIKey string
 
 	VRSTrendingThreshold  float64
 	VRSShareVelocityHours int
@@ -66,7 +66,7 @@ func Load() {
 		GoogleClientSecret: mustGetEnv("GOOGLE_CLIENT_SECRET"),
 		GoogleCallbackURL:  mustGetEnv("GOOGLE_CALLBACK_URL"),
 
-		GoogleTranslateAPIKey: mustGetEnv("GOOGLE_TRANSLATE_API_KEY"),
+		DeepLAPIKey: getEnv("DEEPL_API_KEY", ""),
 
 		VRSTrendingThreshold:  parseFloat("VRS_TRENDING_THRESHOLD", 0.75),
 		VRSShareVelocityHours: parseInt("VRS_SHARE_VELOCITY_HOURS", 2),
