@@ -236,45 +236,45 @@ type googleUserInfo struct {
 	Picture string `json:"picture"`
 }
 
-// verifyGoogleToken accepts either:
-// - an OAuth2 access_token (from implicit/popup flow) → calls userinfo endpoint
-// - an id_token (credential from One Tap) → calls tokeninfo endpoint
-// Frontend sends access_token via useGoogleLogin implicit flow.
+// verifyGoogleToken verifies a Google id_token (credential) from the GoogleLogin component.
+// Frontend sends the credential JWT directly — we verify via Google's tokeninfo endpoint.
 func verifyGoogleToken(token string) (*googleUserInfo, error) {
-	// Try userinfo first (access_token from implicit flow)
-	req, _ := http.NewRequest(http.MethodGet, "https://www.googleapis.com/oauth2/v3/userinfo", nil)
-	req.Header.Set("Authorization", "Bearer "+token)
+	httpClient := &http.Client{Timeout: 5 * time.Second}
 
-	client := &http.Client{Timeout: 5 * time.Second}
-	resp, err := client.Do(req)
+	// Primary: tokeninfo for id_token (credential from GoogleLogin component / One Tap)
+	resp, err := httpClient.Get("https://oauth2.googleapis.com/tokeninfo?id_token=" + token)
 	if err != nil {
-		return nil, fmt.Errorf("google userinfo: %w", err)
+		return nil, fmt.Errorf("google tokeninfo request: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusOK {
 		var info googleUserInfo
 		if err := json.NewDecoder(resp.Body).Decode(&info); err != nil {
-			return nil, fmt.Errorf("decode userinfo: %w", err)
+			return nil, fmt.Errorf("decode tokeninfo: %w", err)
 		}
-		if info.Sub == "" || info.Email == "" {
-			return nil, fmt.Errorf("google userinfo: missing sub or email")
+		if info.Sub != "" && info.Email != "" {
+			return &info, nil
 		}
-		return &info, nil
 	}
 
-	// Fallback: try tokeninfo (id_token from One Tap credential)
-	resp2, err := http.Get("https://oauth2.googleapis.com/tokeninfo?id_token=" + token)
+	// Fallback: userinfo for OAuth2 access_token (older flow)
+	req, _ := http.NewRequest(http.MethodGet, "https://www.googleapis.com/oauth2/v3/userinfo", nil)
+	req.Header.Set("Authorization", "Bearer "+token)
+	resp2, err := httpClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("google tokeninfo: %w", err)
+		return nil, fmt.Errorf("google userinfo request: %w", err)
 	}
 	defer resp2.Body.Close()
 	if resp2.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("google auth failed: status %d", resp2.StatusCode)
+		return nil, fmt.Errorf("google auth failed with status %d", resp2.StatusCode)
 	}
 	var info googleUserInfo
 	if err := json.NewDecoder(resp2.Body).Decode(&info); err != nil {
-		return nil, fmt.Errorf("decode tokeninfo: %w", err)
+		return nil, fmt.Errorf("decode userinfo: %w", err)
+	}
+	if info.Sub == "" || info.Email == "" {
+		return nil, fmt.Errorf("google token invalid: missing user info")
 	}
 	return &info, nil
 }

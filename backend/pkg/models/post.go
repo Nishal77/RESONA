@@ -25,7 +25,7 @@ type Post struct {
 	ShareCount            int        `gorm:"not null;default:0" json:"share_count"`
 	ViewCount             int        `gorm:"not null;default:0" json:"view_count"`
 	SaveCount             int        `gorm:"not null;default:0" json:"save_count"`
-	Tags                  []Tag      `gorm:"many2many:post_tags;" json:"tags,omitempty"`
+	Tags                  []Tag      `gorm:"many2many:post_tags;" json:"tags"`
 	CreatedAt             time.Time  `json:"created_at"`
 	UpdatedAt             time.Time  `json:"updated_at"`
 }

@@ -119,7 +119,7 @@ export function PostCard({ post, onUpdate: _onUpdate }: Props) {
       </Link>
 
       {/* Tags */}
-      {post.tags.length > 0 && (
+      {post.tags && post.tags.length > 0 && (
         <div className="flex flex-wrap gap-1 mb-3">
           {post.tags.map(tag => (
             <Link

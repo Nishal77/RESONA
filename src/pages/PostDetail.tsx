@@ -82,7 +82,7 @@ export default function PostDetail() {
         )}
 
         {/* Tags */}
-        {post.tags.length > 0 && (
+        {post.tags && post.tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-4">
             {post.tags.map(t => (
               <Link key={t.id} to={`/explore/tags/${t.name}`} className="text-xs text-resona-navy hover:underline">
